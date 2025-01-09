@@ -1,0 +1,82 @@
+# Note: This is a full specification, but only paths are actually used.
+# Any refs are rewritten as absolute file uris.
+---
+swagger: "2.0"
+paths:
+  /image:
+    get:
+      description: Get Electre cover image from Electre Webservice.
+      operationId: getElectreImage
+      parameters:
+        - $ref: ./openapi/parameters.yaml#/ean_qp
+        - $ref: ./openapi/parameters.yaml#/side_qp
+        - $ref: ./openapi/parameters.yaml#/result_page_qp
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Cover url received
+          schema:
+            type: object
+        400:
+          description: Bad parameters
+          schema:
+            $ref: ./openapi/definitions.yaml#/error
+        401:
+          description: Authentication required
+          schema:
+            $ref: ./openapi/definitions.yaml#/error
+        403:
+          description: Access forbidden
+          schema:
+            $ref: ./openapi/definitions.yaml#/error
+        500:
+          description: Internal error
+          schema:
+            $ref: ./openapi/definitions.yaml#/error
+        503:
+          description: Under maintenance
+          schema:
+            $ref: ./openapi/definitions.yaml#/error
+      tags:
+        - enhanced_content
+      x-mojo-to: Com::Biblibre::Electre::Controller::Webservice#get_electre_image
+  /resume:
+    get:
+      description: Get Electre resume from Electre Webservice.
+      operationId: getElectreResume
+      parameters:
+        - $ref: ./openapi/parameters.yaml#/ean_qp
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Resume with html tags received
+          schema:
+            type: object
+        400:
+          description: Bad parameters
+          schema:
+            $ref: ./openapi/definitions.yaml#/error
+        401:
+          description: Authentication required
+          schema:
+            $ref: ./openapi/definitions.yaml#/error
+        403:
+          description: Access forbidden
+          schema:
+            $ref: ./openapi/definitions.yaml#/error
+        500:
+          description: Internal error
+          schema:
+            $ref: ./openapi/definitions.yaml#/error
+        503:
+          description: Under maintenance
+          schema:
+            $ref: ./openapi/definitions.yaml#/error
+      tags:
+        - enhanced_content
+      x-mojo-to: Com::Biblibre::Electre::Controller::Webservice#get_electre_resume
+info:
+  title: Koha REST API Electre Interface Plugin
+  version: "1"

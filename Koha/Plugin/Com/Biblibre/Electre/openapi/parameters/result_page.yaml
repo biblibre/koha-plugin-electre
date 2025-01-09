@@ -1,0 +1,6 @@
+---
+result_page_qp:
+  description: Set if cover will be append on result page to display correct size
+  in: query
+  name: result_page
+  type: boolean

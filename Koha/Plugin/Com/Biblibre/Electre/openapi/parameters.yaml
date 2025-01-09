@@ -1,0 +1,7 @@
+---
+ean_qp:
+  $ref: ./parameters/ean.yaml#/ean_qp
+side_qp:
+  $ref: ./parameters/side.yaml#/side_qp
+result_page_qp:
+  $ref: ./parameters/result_page.yaml#/result_page_qp

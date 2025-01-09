@@ -1,0 +1,6 @@
+---
+side_qp:
+  description: Side to display cover (Staff or Opac)
+  in: query
+  name: side
+  type: string

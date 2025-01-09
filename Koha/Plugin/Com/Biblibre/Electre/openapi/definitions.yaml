@@ -1,0 +1,7 @@
+---
+image:
+  $ref: ./definitions/image.yaml
+resume:
+  $ref: ./definitions/resume.yaml
+error:
+  $ref: "./definitions/error.yaml"

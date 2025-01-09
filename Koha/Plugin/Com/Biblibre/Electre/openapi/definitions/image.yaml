@@ -1,0 +1,6 @@
+---
+properties:
+  url:
+    description: Cover url from Electre Webservice
+    type: string
+type: object

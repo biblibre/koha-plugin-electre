@@ -1,0 +1,6 @@
+---
+properties:
+  resume:
+    description: Resume from Electre Webservice with html tags
+    type: string
+type: object

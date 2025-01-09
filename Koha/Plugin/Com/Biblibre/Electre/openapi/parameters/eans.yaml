@@ -1,0 +1,7 @@
+---
+eans_qp:
+  description: List of eans separate by a comma
+  in: query
+  name: eans
+  type: string
+  required: true

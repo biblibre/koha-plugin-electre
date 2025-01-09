@@ -1,0 +1,7 @@
+---
+ean_qp:
+  description: Ean from biblio
+  in: query
+  name: ean
+  type: string
+  required: true
