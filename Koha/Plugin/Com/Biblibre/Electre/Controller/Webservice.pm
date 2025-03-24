@@ -173,7 +173,7 @@ sub _isThumbnailSize {
 }
 
 sub _determine_pic_size {
-    my ( $c, $side, $on_result_page ) = @_;
+    my ( $self, $c, $side, $on_result_page ) = @_;
 
     if ($on_result_page) {
         return 'imagetteCouverture';
