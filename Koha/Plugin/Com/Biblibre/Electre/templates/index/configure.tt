@@ -43,50 +43,50 @@
     <form method="get" id="electre_plugin_config">
         <div class="container">
             <div class="row mb-3">
-                <label for="access_username" class="col-sm-2 col-form-label">Electre username</label>
+                <label for="access_username" class="col-sm-2">Electre username</label>
                 <div class="col-sm-2">
-                    <input type="text" name="access_username" id="access_username" class="form-control" value="[% access_username %]" />
+                    <input type="text" name="access_username" id="access_username" value="[% access_username %]" />
                 </div>
             </div>
             <div class="row mb-3">
-                <label for="access_password" class="col-sm-2 col-form-label">Electre password</label>
+                <label for="access_password" class="col-sm-2">Electre password</label>
                 <div class="col-sm-2">
-                    <input type="password" name="access_password" id="access_password" class="form-control" value="[% access_password %]" />
+                    <input type="password" name="access_password" id="access_password" value="[% access_password %]" />
                 </div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Show electre resume</label>
+                <label class="col-sm-2">Show electre resume</label>
                 <div class="col-sm-6">
-                    <div class="form-check">
-                        <input type="checkbox" id="resume_on_staff" name="resume_on_staff" class="form-check-input" value="1" [% IF resume_on_staff %] checked="checked" [% END %] />
-                        <label for="resume_on_staff" class="form-check-label">Staff</label>
+                    <div>
+                        <input type="checkbox" id="resume_on_staff" name="resume_on_staff" value="1" [% IF resume_on_staff %] checked="checked" [% END %] />
+                        <label for="resume_on_staff">Staff</label>
                     </div>
-                    <div class="form-check">
-                        <input type="checkbox" id="resume_on_opac" name="resume_on_opac" class="form-check-input" value="1" [% IF resume_on_opac %] checked="checked" [% END %] />
-                        <label for="resume_on_opac" class="form-check-label">OPAC</label>
+                    <div>
+                        <input type="checkbox" id="resume_on_opac" name="resume_on_opac" value="1" [% IF resume_on_opac %] checked="checked" [% END %] />
+                        <label for="resume_on_opac">OPAC</label>
                     </div>
                 </div>
             </div>
             <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Show electre image</label>
+                <label class="col-sm-2">Show electre image</label>
                 <div class="col-sm-6">
-                    <div class="form-check">
-                        <input type="checkbox" id="image_on_staff" name="image_on_staff" class="form-check-input" value="1" [% IF image_on_staff %] checked="checked" [% END %] />
-                        <label for="image_on_staff" class="form-check-label">Staff</label>
-                        <div id="image_size_group_staff" class="form-group mt-2 hide">
-                            <label for="thumbnail_on_staff" class="form-label">Thumbnail size on detail page</label>
-                            <select id="thumbnail_on_staff" name="thumbnail_on_staff" class="form-select">
+                    <div>
+                        <input type="checkbox" id="image_on_staff" name="image_on_staff" value="1" [% IF image_on_staff %] checked="checked" [% END %] />
+                        <label for="image_on_staff">Staff</label>
+                        <div id="image_size_group_staff" class="mt-2 hide">
+                            <label for="thumbnail_on_staff">Thumbnail size on detail page</label>
+                            <select id="thumbnail_on_staff" name="thumbnail_on_staff">
                                 <option value="1" [% IF thumbnail_on_staff == "1" %] selected="selected" [% END %]>Yes</option>
                                 <option value="0" [% IF thumbnail_on_staff == "0" %] selected="selected" [% END %]>No</option>
                             </select>
                         </div>
                     </div>
-                    <div class="form-check">
-                        <input type="checkbox" id="image_on_opac" name="image_on_opac" class="form-check-input" value="1" [% IF image_on_opac %] checked="checked" [% END %] />
-                        <label for="image_on_opac" class="form-check-label">OPAC</label>
-                        <div id="image_size_group_opac" class="form-group mt-2 hide">
-                            <label for="thumbnail_on_opac" class="form-label">Thumbnail size on detail page</label>
-                            <select id="thumbnail_on_opac" name="thumbnail_on_opac" class="form-select">
+                    <div>
+                        <input type="checkbox" id="image_on_opac" name="image_on_opac" value="1" [% IF image_on_opac %] checked="checked" [% END %] />
+                        <label for="image_on_opac">OPAC</label>
+                        <div id="image_size_group_opac" class="mt-2 hide">
+                            <label for="thumbnail_on_opac">Thumbnail size on detail page</label>
+                            <select id="thumbnail_on_opac" name="thumbnail_on_opac">
                                 <option value="1" [% IF thumbnail_on_opac == "1" %] selected="selected" [% END %]>Yes</option>
                                 <option value="0" [% IF thumbnail_on_opac == "0" %] selected="selected" [% END %]>No</option>
                             </select>
