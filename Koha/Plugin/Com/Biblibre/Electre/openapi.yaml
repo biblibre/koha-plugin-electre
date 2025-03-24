@@ -41,6 +41,9 @@ paths:
       tags:
         - enhanced_content
       x-mojo-to: Com::Biblibre::Electre::Controller::Webservice#get_electre_image
+      x-koha-authorization:
+        permissions:
+          catalogue: 1
   /resume:
     get:
       description: Get Electre resume from Electre Webservice.
@@ -77,6 +80,9 @@ paths:
       tags:
         - enhanced_content
       x-mojo-to: Com::Biblibre::Electre::Controller::Webservice#get_electre_resume
+      x-koha-authorization:
+        permissions:
+          catalogue: 1
 info:
   title: Koha REST API Electre Interface Plugin
   version: "1"
