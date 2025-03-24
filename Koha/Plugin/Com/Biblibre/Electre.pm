@@ -5,14 +5,14 @@ use base       qw(Koha::Plugins::Base);
 use Mojo::JSON qw(decode_json);
 use C4::Context;
 
-our $VERSION         = "1.0";
+our $VERSION         = "1.1";
 our $MINIMUM_VERSION = "23.05";
 
 our $metadata = {
     name            => 'Plugin Electre',
     author          => 'Thibaud Guillot',
     date_authored   => '2024-11-18',
-    date_updated    => "2024-11-18",
+    date_updated    => "2025-03-24",
     minimum_version => $MINIMUM_VERSION,
     maximum_version => undef,
     version         => $VERSION,
@@ -37,21 +37,21 @@ sub new {
 # Mandatory even if does nothing
 sub install {
     my ( $self, $args ) = @_;
- 
+
     return 1;
 }
- 
+
 # Mandatory even if does nothing
 sub upgrade {
     my ( $self, $args ) = @_;
- 
+
     return 1;
 }
- 
+
 # Mandatory even if does nothing
 sub uninstall {
     my ( $self, $args ) = @_;
- 
+
     return 1;
 }
 

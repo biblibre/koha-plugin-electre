@@ -1,3 +1,10 @@
+# 2025-03-24
+**Version 1.1**
+
+- Add correct permissions on API calls
+- Fix config form inputs and labels
+- Fix getting correct thumbnail size according to plugin settings
+
 # 2024-11-18
 **Version 1.0**
 
