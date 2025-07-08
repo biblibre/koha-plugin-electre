@@ -18,32 +18,13 @@ paths:
           description: Cover url received
           schema:
             type: object
-        400:
-          description: Bad parameters
-          schema:
-            $ref: ./openapi/definitions.yaml#/error
-        401:
-          description: Authentication required
-          schema:
-            $ref: ./openapi/definitions.yaml#/error
-        403:
-          description: Access forbidden
-          schema:
-            $ref: ./openapi/definitions.yaml#/error
-        500:
-          description: Internal error
-          schema:
-            $ref: ./openapi/definitions.yaml#/error
-        503:
-          description: Under maintenance
+        404:
+          description: Not found
           schema:
             $ref: ./openapi/definitions.yaml#/error
       tags:
         - enhanced_content
       x-mojo-to: Com::Biblibre::Electre::Controller::Webservice#get_electre_image
-      x-koha-authorization:
-        permissions:
-          catalogue: 1
   /resume:
     get:
       description: Get Electre resume from Electre Webservice.
@@ -57,32 +38,13 @@ paths:
           description: Resume with html tags received
           schema:
             type: object
-        400:
-          description: Bad parameters
-          schema:
-            $ref: ./openapi/definitions.yaml#/error
-        401:
-          description: Authentication required
-          schema:
-            $ref: ./openapi/definitions.yaml#/error
-        403:
-          description: Access forbidden
-          schema:
-            $ref: ./openapi/definitions.yaml#/error
-        500:
-          description: Internal error
-          schema:
-            $ref: ./openapi/definitions.yaml#/error
-        503:
-          description: Under maintenance
+        404:
+          description: Not found
           schema:
             $ref: ./openapi/definitions.yaml#/error
       tags:
         - enhanced_content
       x-mojo-to: Com::Biblibre::Electre::Controller::Webservice#get_electre_resume
-      x-koha-authorization:
-        permissions:
-          catalogue: 1
 info:
   title: Koha REST API Electre Interface Plugin
   version: "1"

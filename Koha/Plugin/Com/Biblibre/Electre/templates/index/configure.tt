@@ -45,13 +45,13 @@
             <div class="row mb-3">
                 <label for="access_username" class="col-sm-2">Electre username</label>
                 <div class="col-sm-2">
-                    <input type="text" name="access_username" id="access_username" value="[% access_username %]" />
+                    <input type="text" name="access_username" id="access_username" value="[% access_username | html %]" />
                 </div>
             </div>
             <div class="row mb-3">
                 <label for="access_password" class="col-sm-2">Electre password</label>
                 <div class="col-sm-2">
-                    <input type="password" name="access_password" id="access_password" value="[% access_password %]" />
+                    <input type="password" name="access_password" id="access_password" value="[% access_password | html %]" />
                 </div>
             </div>
             <div class="row mb-3">
