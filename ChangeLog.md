@@ -1,3 +1,9 @@
+# 2025-07-08
+**Version 2.0
+
+- Remove user permissions and useless api response code
+- Add html filters
+ 
 # 2025-03-24
 **Version 1.1**
 

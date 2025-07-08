@@ -5,14 +5,14 @@ use base       qw(Koha::Plugins::Base);
 use Mojo::JSON qw(decode_json);
 use C4::Context;
 
-our $VERSION         = "1.1";
+our $VERSION         = "2.0";
 our $MINIMUM_VERSION = "23.05";
 
 our $metadata = {
     name            => 'Plugin Electre',
     author          => 'Thibaud Guillot',
     date_authored   => '2024-11-18',
-    date_updated    => "2025-03-24",
+    date_updated    => "2025-07-08",
     minimum_version => $MINIMUM_VERSION,
     maximum_version => undef,
     version         => $VERSION,
