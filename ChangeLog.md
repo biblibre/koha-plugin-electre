@@ -1,3 +1,8 @@
+# 2026-01-09
+**Version 2.1
+
+- Add 5sec timeout on webservice request 
+
 # 2025-07-08
 **Version 2.0
 
