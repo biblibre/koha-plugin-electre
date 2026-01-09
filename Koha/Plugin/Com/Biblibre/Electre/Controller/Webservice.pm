@@ -153,6 +153,7 @@ sub _getAccessToken {
 sub _request {
     my ($request) = @_;
     my $ua = LWP::UserAgent->new( agent => "Koha " . $Koha::VERSION );
+    $ua->timeout(5); # Set timeout to improve perf 	
 
     my $response;
     eval { $response = $ua->request($request); };
