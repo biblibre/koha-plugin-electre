@@ -8,7 +8,7 @@ paths:
       description: Get Electre cover image from Electre Webservice.
       operationId: getElectreImage
       parameters:
-        - $ref: ./openapi/parameters.yaml#/ean_qp
+        - $ref: ./openapi/parameters.yaml#/isbn10_qp
         - $ref: ./openapi/parameters.yaml#/side_qp
         - $ref: ./openapi/parameters.yaml#/result_page_qp
       produces:
@@ -30,7 +30,7 @@ paths:
       description: Get Electre resume from Electre Webservice.
       operationId: getElectreResume
       parameters:
-        - $ref: ./openapi/parameters.yaml#/ean_qp
+        - $ref: ./openapi/parameters.yaml#/isbn10_qp
       produces:
         - application/json
       responses:

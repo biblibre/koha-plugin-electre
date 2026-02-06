@@ -1,6 +1,6 @@
 ---
-ean_qp:
-  $ref: ./parameters/ean.yaml#/ean_qp
+isbn10_qp:
+  $ref: ./parameters/isbn10.yaml#/isbn10_qp
 side_qp:
   $ref: ./parameters/side.yaml#/side_qp
 result_page_qp:
