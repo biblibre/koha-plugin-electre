@@ -25,6 +25,7 @@ use HTTP::Request::Common;
 use JSON;
 
 use C4::Context;
+use C4::Koha qw(NormalizeISBN);
 
 =head1 API
 
@@ -37,7 +38,25 @@ Controller function that handles getting Electre images
 sub get_electre_image {
     my $c = shift->openapi->valid_input or return;
 
-    my $ean            = $c->param('ean');
+    my $isbn10 = $c->param('isbn10');
+    
+    return $c->render(
+        status => 400,
+        openapi => { error => "No ISBN10 provided" }
+    ) unless $isbn10;
+    
+    my $ean = NormalizeISBN(
+            {
+                isbn          => $isbn10,
+                format        => 'ISBN-13',
+                strip_hyphens => 1,
+            }
+        );
+    return $c->render(
+        status => 400,
+        openapi => { error => "Invalid ISBN10: could not convert to EAN13" }
+    ) unless $ean;
+
     my $side           = $c->param('side');
     my $on_result_page = $c->param('result_page');
     my $picSize        = $c->_determine_pic_size( $c, $side, $on_result_page );
@@ -57,16 +76,29 @@ sub get_electre_image {
         my $contents = from_json( $response->decoded_content )->{"notices"}[0];
         my $picUrl   = $contents->{$picSize};
 
+        if (!$picUrl) {
+            return $c->render(
+                status => 404,
+                openapi => { error => "No cover image found for this ISBN" }
+            );
+        }
+
         return $c->render(
             status => 200,
             data   => $picUrl,
+        );
+    }
+    elsif ( $response->code == 404 ) {
+        return $c->render(
+            status => 404,
+            openapi => { error => "No notice found for this ISBN" }
         );
     }
     elsif ( $response->is_error ) {
         return $c->render(
             status  => 500,
             openapi =>
-              { error => "Electre cover error: " . $response->status_line },
+              { error => "Electre error: " . $response->status_line },
         );
     }
 }
@@ -74,7 +106,24 @@ sub get_electre_image {
 sub get_electre_resume {
     my $c = shift->openapi->valid_input or return;
 
-    my $ean = $c->param('ean');
+    my $isbn10 = $c->param('isbn10');
+    
+    return $c->render(
+        status => 400,
+        openapi => { error => "No ISBN10 provided" }
+    ) unless $isbn10;
+    
+    my $ean = NormalizeISBN(
+            {
+                isbn          => $isbn10,
+                format        => 'ISBN-13',
+                strip_hyphens => 1,
+            }
+        );
+    return $c->render(
+        status => 400,
+        openapi => { error => "Invalid ISBN10: could not convert to EAN13" }
+    ) unless $ean;
 
     my $token               = $c->_getAccessToken();
     my $noticeByEanEndpoint = "https://api.electre-ng.com/notices/ean/${ean}";
@@ -90,16 +139,29 @@ sub get_electre_resume {
         my $contents = from_json( $response->decoded_content )->{"notices"}[0];
         my $resume   = $contents->{'quatriemeDeCouverture'};
 
+        if (!$resume) {
+            return $c->render(
+                status => 404,
+                openapi => { error => "No resume found for this ISBN" }
+            );
+        }
+
         return $c->render(
             status => 200,
             data   => $resume,
+        );
+    }
+    elsif ( $response->code == 404 ) {
+        return $c->render(
+            status => 404,
+            openapi => { error => "No notice found for this ISBN" }
         );
     }
     elsif ( $response->is_error ) {
         return $c->render(
             status  => 500,
             openapi =>
-              { error => "Electre resume error: " . $response->status_line },
+              { error => "Electre error: " . $response->status_line },
         );
     }
 }

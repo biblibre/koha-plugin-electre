@@ -4,6 +4,7 @@ use Modern::Perl;
 use base       qw(Koha::Plugins::Base);
 use Mojo::JSON qw(decode_json);
 use C4::Context;
+use C4::Koha qw(NormalizeISBN);
 
 our $VERSION         = "2.1";
 our $MINIMUM_VERSION = "23.05";
@@ -174,26 +175,31 @@ sub intranet_cover_images {
         function addElectreCover(e) {
             var promises = [];
             const search_results_images = document.querySelectorAll('.cover-slides, .cover-slider');
+            const existingCovers = document.querySelectorAll('.cover-image');
             const divDetail = $('#catalogue_detail_biblio .page-section');
             if(search_results_images.length){
                 search_results_images.forEach((div, i) => {
                     let { isbn, biblionumber, processedbiblio } = div.dataset;
-                    if (isbn) {
-                        if (isbn.length == 10) {
-                            isbn = 978 + isbn;
-                        }
+                    if (isbn && isbn.length == 10) {
                         let onResultPage = divDetail.length ? false : true;
+                        console.log('plop');
                         const promise = $.get(
-                            `/api/v1/contrib/electre/image?ean=${isbn}&side=staff&result_page=${onResultPage}`, function( data ) {
+                            `/api/v1/contrib/electre/image?isbn10=${isbn}&side=staff&result_page=${onResultPage}`, function( data ) {
                                 if (data) {
+                                    console.log(data);
+                                    const hint = onResultPage ? 'Electre cover image' : 'Image from Electre';
                                     div.innerHTML += `
                                             <div class="cover-image" id="electre-coverimg${ biblionumber ? `-${biblionumber}` : '' }">
                                                 <a href=${ processedbiblio ? processedbiblio : `${data}` } >
                                                     <img src="${data}" alt="Electre cover image" />
                                                 </a>
-                                                <div class="hint">Image from Electre</div>
+                                                <div class="hint">${hint}</div>
                                             </div>
                                     `;
+                                    // Manually remove no-image div if present
+                                    if(div.querySelector('.no-image')){
+                                        div.querySelector('.no-image').remove();
+                                    }
                                 }
                             }
                         ).fail(function(xhr, status, error) {
@@ -203,6 +209,7 @@ sub intranet_cover_images {
                     }
                 });
                 Promise.allSettled(promises).then(() => {
+                    $(".cover-nav").remove();
                     verify_cover_images();
                 });
             }
@@ -212,19 +219,14 @@ sub intranet_cover_images {
             if(divDetail.length) {
                 const coverSliderDatas = document.querySelector('.cover-slides, .cover-slider').dataset;
                 let isbn = coverSliderDatas.isbn;
-                if (isbn) {
-                    if (isbn.length == 10) {
-                        isbn = 978 + isbn;
-                    }
+                if (isbn && isbn.length == 10) {
                     $.get(
-                        '/api/v1/contrib/electre/resume?ean=' + isbn, function( data ) {
+                        '/api/v1/contrib/electre/resume?isbn10=' + isbn, function( data ) {
                             if (data) {
                                 divDetail.append(`
                                         <span class="results_summary electre">
                                             <span class="label">Electre: </span>
-                                            <span id="electre-resume">
-                                                ${data}
-                                            </span>
+                                            <span id="electre-resume">${data}</span>
                                         </span>
                                 `);
                             }
@@ -255,18 +257,15 @@ sub opac_cover_images {
             const divDetail = $('#catalogue_detail_biblio');
             if(search_results_images.length){
                 search_results_images.forEach((div, i) => {
-                    let { isbn, imgtitle } = div.dataset;
-                    if (isbn) {
-                        if (isbn.length == 10) {
-                            isbn = 978 + isbn;
-                        }
+                    let { isbn, imgTitle } = div.dataset;
+                    if (isbn && isbn.length == 10) {
                         let onResultPage = divDetail.length ? false : true;
                         const promise = $.get(
-                             `/api/v1/contrib/electre/image?ean=${isbn}&side=opac&result_page=${onResultPage}`, function( data ) {
+                             `/api/v1/contrib/electre/image?isbn10=${isbn}&side=opac&result_page=${onResultPage}`, function( data ) {
                                 if (data) {
-                                    if (divDetail.length) {
+                                    if (onResultPage) {
                                         div.innerHTML += `
-                                            <div class="cover-image" id="electre-coverimg">
+                                            <div class="cover-image" id="electre-coverimg" title="${imgTitle}">
                                                 <a href="${data}" >
                                                     <img src="${data}" alt="Electre cover image" />
                                                 </a>
@@ -275,11 +274,12 @@ sub opac_cover_images {
                                         `;
                                     } else {
                                         div.innerHTML += `
-                                            <span title="${imgtitle}">
+                                            <div class="cover-image id="electre-coverimg">
                                                 <a href="${data}" >
                                                     <img src="${data}" alt class="item-thumbnail" />
                                                 </a>
-                                            </span>
+                                                <div class="hint">Image from Electre</div>
+                                            </div>
                                         `;
                                      }
                                 }
@@ -291,9 +291,8 @@ sub opac_cover_images {
                     }
                 });
                 Promise.allSettled(promises).then(() => {
-                    if (divDetail.length) {
-                        verify_cover_images();
-                    }
+                    $('.cover-nav').remove();
+                    verify_cover_images();
                 });
             }
         }
@@ -302,12 +301,9 @@ sub opac_cover_images {
             if(divDetail.length) {
                 const coverSliderDatas = document.querySelector('.cover-slides, .cover-slider').dataset;
                 let isbn = coverSliderDatas.isbn;
-                if (isbn) {
-                    if (isbn.length == 10) {
-                        isbn = 978 + isbn;
-                    }
+                if (isbn && isbn.length == 10) {
                     $.get(
-                        '/api/v1/contrib/electre/resume?ean=' + isbn, function( data ) {
+                        '/api/v1/contrib/electre/resume?isbn10=' + isbn, function( data ) {
                             if (data) {
                                 divDetail.append(`
                                         <span class="results_summary electre">

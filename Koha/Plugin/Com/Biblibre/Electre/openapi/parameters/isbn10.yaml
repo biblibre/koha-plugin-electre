@@ -1,0 +1,7 @@
+---
+isbn10_qp:
+  description: ISBN10 identifier
+  in: query
+  name: isbn10
+  type: string
+  required: true
