@@ -1,3 +1,9 @@
+# 2026-02-06
+**Version 3.0
+
+- Using directly isbn10 in plugin api route
+- Add placeholder system to prevent cover clean up
+
 # 2026-01-09
 **Version 2.1
 
