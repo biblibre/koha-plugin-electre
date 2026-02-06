@@ -175,27 +175,44 @@ sub intranet_cover_images {
         function addElectreCover(e) {
             var promises = [];
             const search_results_images = document.querySelectorAll('.cover-slides, .cover-slider');
-            const existingCovers = document.querySelectorAll('.cover-image');
             const divDetail = $('#catalogue_detail_biblio .page-section');
             if(search_results_images.length){
                 search_results_images.forEach((div, i) => {
                     let { isbn, biblionumber, processedbiblio } = div.dataset;
                     if (isbn && isbn.length == 10) {
-                        let onResultPage = divDetail.length ? false : true;
-                        console.log('plop');
+                        let onResultPage = divDetail.length ? false : true;                        
+                        if (!onResultPage) {
+                            div.innerHTML += `
+                                <div class="cover-image electre-loading" id="electre-coverimg${ biblionumber ? `-${biblionumber}` : '' }">
+                                    <img src=""/>
+                                    <div class="hint">Electre cover image</div>
+                                </div>
+                            `;
+                        }
                         const promise = $.get(
                             `/api/v1/contrib/electre/image?isbn10=${isbn}&side=staff&result_page=${onResultPage}`, function( data ) {
                                 if (data) {
-                                    console.log(data);
                                     const hint = onResultPage ? 'Electre cover image' : 'Image from Electre';
-                                    div.innerHTML += `
-                                            <div class="cover-image" id="electre-coverimg${ biblionumber ? `-${biblionumber}` : '' }">
-                                                <a href=${ processedbiblio ? processedbiblio : `${data}` } >
-                                                    <img src="${data}" alt="Electre cover image" />
-                                                </a>
-                                                <div class="hint">${hint}</div>
-                                            </div>
-                                    `;
+                                    const placeholder = div.querySelector('.electre-loading');
+                                    if (placeholder) {
+                                        placeholder.innerHTML = `
+                                            <a href="${ processedbiblio ? processedbiblio : data }">
+                                                <img src="${data}" alt="Electre cover image" />
+                                            </a>
+                                            <div class="hint">${hint}</div>
+                                        `;
+                                        placeholder.classList.remove('electre-loading');
+                                    } else {
+                                        div.innerHTML += `
+                                                <div class="cover-image" id="electre-coverimg${ biblionumber ? `-${biblionumber}` : '' }">
+                                                    <a href=${ processedbiblio ? processedbiblio : `${data}` } >
+                                                        <img src="${data}" alt="Electre cover image" />
+                                                    </a>
+                                                    <div class="hint">${hint}</div>
+                                                </div>
+                                        `;
+                                    }
+                                    
                                     // Manually remove no-image div if present
                                     if(div.querySelector('.no-image')){
                                         div.querySelector('.no-image').remove();
@@ -203,7 +220,11 @@ sub intranet_cover_images {
                                 }
                             }
                         ).fail(function(xhr, status, error) {
-                            console.error(xhr.responseJSON.error);
+                            console.error(xhr.responseJSON?.error || error);
+                            const placeholder = div.querySelector('.electre-loading');
+                            if (placeholder) {
+                                placeholder.remove();
+                            }
                         });
                         promises.push(promise);
                     }
@@ -260,32 +281,44 @@ sub opac_cover_images {
                     let { isbn, imgTitle } = div.dataset;
                     if (isbn && isbn.length == 10) {
                         let onResultPage = divDetail.length ? false : true;
+                        
+                        div.innerHTML += `
+                            <div class="cover-image electre-loading" id="electre-coverimg">
+                                <img src=""/>
+                            </div>
+                        `;
+                        
                         const promise = $.get(
                              `/api/v1/contrib/electre/image?isbn10=${isbn}&side=opac&result_page=${onResultPage}`, function( data ) {
                                 if (data) {
-                                    if (onResultPage) {
-                                        div.innerHTML += `
-                                            <div class="cover-image" id="electre-coverimg" title="${imgTitle}">
-                                                <a href="${data}" >
+                                    const placeholder = div.querySelector('.electre-loading');
+                                    if (placeholder) {
+                                        if (onResultPage) {
+                                            placeholder.innerHTML = `
+                                                <a href="${data}">
                                                     <img src="${data}" alt="Electre cover image" />
                                                 </a>
                                                 <div class="hint">Image from Electre</div>
-                                            </div>
-                                        `;
-                                    } else {
-                                        div.innerHTML += `
-                                            <div class="cover-image id="electre-coverimg">
-                                                <a href="${data}" >
-                                                    <img src="${data}" alt class="item-thumbnail" />
+                                            `;
+                                            placeholder.setAttribute('title', imgTitle || '');
+                                        } else {
+                                            placeholder.innerHTML = `
+                                                <a href="${data}">
+                                                    <img src="${data}" alt="Electre cover image" class="item-thumbnail" />
+                                                    <div class="hint">Image from Electre</div>
                                                 </a>
-                                                <div class="hint">Image from Electre</div>
-                                            </div>
-                                        `;
-                                     }
+                                            `;
+                                        }
+                                        placeholder.classList.remove('electre-loading');
+                                    }
                                 }
                             }
                         ).fail(function(xhr, status, error) {
-                            console.error(xhr.responseJSON.error);
+                            console.error(xhr.responseJSON?.error || error);
+                            const placeholder = div.querySelector('.electre-loading');
+                            if (placeholder) {
+                                placeholder.remove();
+                            }
                         });
                         promises.push(promise);
                     }
