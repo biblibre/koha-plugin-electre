@@ -18,8 +18,16 @@ paths:
           description: Cover url received
           schema:
             type: object
+        400:
+          description: Bad request - Invalid or missing ISBN10
+          schema:
+            $ref: ./openapi/definitions.yaml#/error
         404:
           description: Not found
+          schema:
+            $ref: ./openapi/definitions.yaml#/error
+        500:
+          description: Internal server error - Electre webservice error
           schema:
             $ref: ./openapi/definitions.yaml#/error
       tags:
@@ -38,8 +46,16 @@ paths:
           description: Resume with html tags received
           schema:
             type: object
+        400:
+          description: Bad request - Invalid or missing ISBN10
+          schema:
+            $ref: ./openapi/definitions.yaml#/error
         404:
           description: Not found
+          schema:
+            $ref: ./openapi/definitions.yaml#/error
+        500:
+          description: Internal server error - Electre webservice error
           schema:
             $ref: ./openapi/definitions.yaml#/error
       tags:
