@@ -1,3 +1,8 @@
+# 2026-02-18
+**Version 3.1
+
+- Add missing 400 and 500 error responses to OpenAPI spec
+
 # 2026-02-06
 **Version 3.0
 

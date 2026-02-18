@@ -6,14 +6,14 @@ use Mojo::JSON qw(decode_json);
 use C4::Context;
 use C4::Koha qw(NormalizeISBN);
 
-our $VERSION         = "3.0";
+our $VERSION         = "3.1";
 our $MINIMUM_VERSION = "23.05";
 
 our $metadata = {
     name            => 'Plugin Electre',
     author          => 'Thibaud Guillot',
     date_authored   => '2024-11-18',
-    date_updated    => "2026-02-06",
+    date_updated    => "2026-02-18",
     minimum_version => $MINIMUM_VERSION,
     maximum_version => undef,
     version         => $VERSION,
