@@ -4,7 +4,8 @@ use Modern::Perl;
 use base       qw(Koha::Plugins::Base);
 use Mojo::JSON qw(decode_json);
 use C4::Context;
-use C4::Koha qw(NormalizeISBN);
+use C4::Koha      qw(NormalizeISBN);
+use C4::Languages qw(getlanguage);
 
 our $VERSION         = "3.2";
 our $MINIMUM_VERSION = "23.05";
@@ -13,7 +14,7 @@ our $metadata = {
     name            => 'Plugin Electre',
     author          => 'Thibaud Guillot',
     date_authored   => '2024-11-18',
-    date_updated    => "2026-08-25",
+    date_updated    => '2026-08-25',
     minimum_version => $MINIMUM_VERSION,
     maximum_version => undef,
     version         => $VERSION,
@@ -21,6 +22,22 @@ our $metadata = {
       'This plugin implements enhanced content from Electre webservice',
     namespace => 'electre',
 };
+
+# Strings injected into intranet_cover_images/opac_cover_images JS, which is
+# generated in Perl and never goes through Template Toolkit, so it can't use
+# the i18n/*.inc + [% T.xxx %] mechanism used by configure.tt.
+our %JS_STRINGS = (
+    en => {
+        cover_hint   => 'Electre cover image',
+        image_hint   => 'Image from Electre',
+        resume_label => 'Electre: ',
+    },
+    fr => {
+        cover_hint   => 'Image de couverture Electre',
+        image_hint   => "Image d'Electre",
+        resume_label => 'Electre: ',
+    },
+);
 
 sub new {
     my ( $class, $args ) = @_;
@@ -33,6 +50,49 @@ sub new {
     $self->{config_table} = $self->get_qualified_table_name('config');
 
     return $self;
+}
+
+sub _lang {
+    my ($self) = @_;
+
+    my $lang = eval { getlanguage( $self->{'cgi'} ) } // '';
+
+    return $lang =~ /^fr/i ? 'fr' : 'en';
+}
+
+sub _js_strings {
+    my ($self) = @_;
+
+    return $JS_STRINGS{ $self->_lang };
+}
+
+sub _translate_js {
+    my ( $self, $js ) = @_;
+
+    my $strings = $self->_js_strings();
+    $js =~ s/__ELECTRE_COVER_HINT__/$strings->{cover_hint}/g;
+    $js =~ s/__ELECTRE_IMAGE_HINT__/$strings->{image_hint}/g;
+    $js =~ s/__ELECTRE_LABEL__/$strings->{resume_label}/g;
+
+    return $js;
+}
+
+=head3 template_include_paths
+
+Lets C4::Templates find this plugin's i18n/*.inc files (referenced from
+configure.tt as "Koha/Plugin/Com/Biblibre/Electre/i18n/${LANG}.inc")
+by adding this Koha instance's pluginsdir(s) to the Template Toolkit
+INCLUDE_PATH.
+
+=cut
+
+sub template_include_paths {
+    my ($self) = @_;
+
+    my $pluginsdir = C4::Context->config('pluginsdir');
+    my @pluginsdir = ref($pluginsdir) eq 'ARRAY' ? @$pluginsdir : $pluginsdir;
+
+    return \@pluginsdir;
 }
 
 # Mandatory even if does nothing
@@ -188,19 +248,19 @@ sub intranet_cover_images {
                             div.innerHTML += `
                                 <div class="cover-image electre-loading" id="electre-coverimg${ biblionumber ? `-${biblionumber}` : '' }">
                                     <img src=""/>
-                                    <div class="hint">Electre cover image</div>
+                                    <div class="hint">__ELECTRE_COVER_HINT__</div>
                                 </div>
                             `;
                         }
                         const promise = $.get(
                             `/api/v1/contrib/electre/image?isbn10=${isbn}&side=staff&result_page=${onResultPage}`, function( data ) {
                                 if (data) {
-                                    const hint = onResultPage ? 'Electre cover image' : 'Image from Electre';
+                                    const hint = onResultPage ? `__ELECTRE_COVER_HINT__` : `__ELECTRE_IMAGE_HINT__`;
                                     const placeholder = div.querySelector('.electre-loading');
                                     if (placeholder) {
                                         placeholder.innerHTML = `
                                             <a href="${ processedbiblio ? processedbiblio : data }">
-                                                <img src="${data}" alt="Electre cover image" />
+                                                <img src="${data}" alt="__ELECTRE_COVER_HINT__" />
                                             </a>
                                             <div class="hint">${hint}</div>
                                         `;
@@ -209,7 +269,7 @@ sub intranet_cover_images {
                                         div.innerHTML += `
                                                 <div class="cover-image" id="electre-coverimg${ biblionumber ? `-${biblionumber}` : '' }">
                                                     <a href=${ processedbiblio ? processedbiblio : `${data}` } >
-                                                        <img src="${data}" alt="Electre cover image" />
+                                                        <img src="${data}" alt="__ELECTRE_COVER_HINT__" />
                                                     </a>
                                                     <div class="hint">${hint}</div>
                                                 </div>
@@ -249,7 +309,7 @@ sub intranet_cover_images {
                             if (data) {
                                 divDetail.append(`
                                         <span class="results_summary electre">
-                                            <span class="label">Electre: </span>
+                                            <span class="label">__ELECTRE_LABEL__</span>
                                             <span id="electre-resume">${data}</span>
                                         </span>
                                 `);
@@ -271,6 +331,8 @@ JS
     $js .= <<'JS';
     </script>
 JS
+
+    $js = $self->_translate_js($js);
 
     return "$js";
 }
@@ -308,16 +370,16 @@ sub opac_cover_images {
                                         if (onResultPage) {
                                             placeholder.innerHTML = `
                                                 <a href="${data}">
-                                                    <img src="${data}" alt="Electre cover image" />
+                                                    <img src="${data}" alt="__ELECTRE_COVER_HINT__" />
                                                 </a>
-                                                <div class="hint">Image from Electre</div>
+                                                <div class="hint">__ELECTRE_IMAGE_HINT__</div>
                                             `;
                                             placeholder.setAttribute('title', imgTitle || '');
                                         } else {
                                             placeholder.innerHTML = `
                                                 <a href="${data}">
-                                                    <img src="${data}" alt="Electre cover image" class="item-thumbnail" />
-                                                    <div class="hint">Image from Electre</div>
+                                                    <img src="${data}" alt="__ELECTRE_COVER_HINT__" class="item-thumbnail" />
+                                                    <div class="hint">__ELECTRE_IMAGE_HINT__</div>
                                                 </a>
                                             `;
                                         }
@@ -352,7 +414,7 @@ sub opac_cover_images {
                             if (data) {
                                 divDetail.append(`
                                         <span class="results_summary electre">
-                                            <span class="label">Electre: </span>
+                                            <span class="label">__ELECTRE_LABEL__</span>
                                             <span id="electre-resume">
                                                 ${data}
                                             </span>
@@ -376,6 +438,8 @@ JS
     $js .= <<'JS';
     </script>
 JS
+
+    $js = $self->_translate_js($js);
 
     return "$js";
 }
