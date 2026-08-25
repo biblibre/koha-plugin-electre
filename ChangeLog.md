@@ -1,21 +1,27 @@
+# 2026-08-25
+**Version 3.2**
+
+- Fix settings usage
+- Add frenchtranslation
+
 # 2026-02-18
 **Version 3.1
 
 - Add missing 400 and 500 error responses to OpenAPI spec
 
 # 2026-02-06
-**Version 3.0
+**Version 3.0**
 
 - Using directly isbn10 in plugin api route
 - Add placeholder system to prevent cover clean up
 
 # 2026-01-09
-**Version 2.1
+**Version 2.1**
 
 - Add 5sec timeout on webservice request 
 
 # 2025-07-08
-**Version 2.0
+**Version 2.0**
 
 - Remove user permissions and useless api response code
 - Add html filters
