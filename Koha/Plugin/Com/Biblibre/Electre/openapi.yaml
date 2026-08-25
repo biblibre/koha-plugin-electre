@@ -39,6 +39,7 @@ paths:
       operationId: getElectreResume
       parameters:
         - $ref: ./openapi/parameters.yaml#/isbn10_qp
+        - $ref: ./openapi/parameters.yaml#/side_qp
       produces:
         - application/json
       responses:

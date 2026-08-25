@@ -6,14 +6,14 @@ use Mojo::JSON qw(decode_json);
 use C4::Context;
 use C4::Koha qw(NormalizeISBN);
 
-our $VERSION         = "3.1";
+our $VERSION         = "3.2";
 our $MINIMUM_VERSION = "23.05";
 
 our $metadata = {
     name            => 'Plugin Electre',
     author          => 'Thibaud Guillot',
     date_authored   => '2024-11-18',
-    date_updated    => "2026-02-18",
+    date_updated    => "2026-08-25",
     minimum_version => $MINIMUM_VERSION,
     maximum_version => undef,
     version         => $VERSION,
@@ -170,6 +170,9 @@ sub intranet_cover_images {
     my ($self) = @_;
     my $cgi = $self->{'cgi'};
 
+    my $resume_on_staff = $self->retrieve_data('resume_on_staff') // 0;
+    my $image_on_staff  = $self->retrieve_data('image_on_staff')  // 0;
+
     my $js = <<'JS';
     <script>
         function addElectreCover(e) {
@@ -180,7 +183,7 @@ sub intranet_cover_images {
                 search_results_images.forEach((div, i) => {
                     let { isbn, biblionumber, processedbiblio } = div.dataset;
                     if (isbn && isbn.length == 10) {
-                        let onResultPage = divDetail.length ? false : true;                        
+                        let onResultPage = divDetail.length ? false : true;
                         if (!onResultPage) {
                             div.innerHTML += `
                                 <div class="cover-image electre-loading" id="electre-coverimg${ biblionumber ? `-${biblionumber}` : '' }">
@@ -212,7 +215,7 @@ sub intranet_cover_images {
                                                 </div>
                                         `;
                                     }
-                                    
+
                                     // Manually remove no-image div if present
                                     if(div.querySelector('.no-image')){
                                         div.querySelector('.no-image').remove();
@@ -242,7 +245,7 @@ sub intranet_cover_images {
                 let isbn = coverSliderDatas.isbn;
                 if (isbn && isbn.length == 10) {
                     $.get(
-                        '/api/v1/contrib/electre/resume?isbn10=' + isbn, function( data ) {
+                        '/api/v1/contrib/electre/resume?isbn10=' + isbn + '&side=staff', function( data ) {
                             if (data) {
                                 divDetail.append(`
                                         <span class="results_summary electre">
@@ -258,8 +261,14 @@ sub intranet_cover_images {
                 }
             }
         }
-    document.addEventListener('DOMContentLoaded', addElectreCover, true);
-    document.addEventListener('DOMContentLoaded', addElectreResume, true);
+JS
+
+    $js .= "    document.addEventListener('DOMContentLoaded', addElectreCover, true);\n"
+      if $image_on_staff;
+    $js .= "    document.addEventListener('DOMContentLoaded', addElectreResume, true);\n"
+      if $resume_on_staff;
+
+    $js .= <<'JS';
     </script>
 JS
 
@@ -269,6 +278,9 @@ JS
 sub opac_cover_images {
     my ($self) = @_;
     my $cgi = $self->{'cgi'};
+
+    my $resume_on_opac = $self->retrieve_data('resume_on_opac') // 0;
+    my $image_on_opac  = $self->retrieve_data('image_on_opac')  // 0;
 
     my $js = <<'JS';
     <script>
@@ -281,13 +293,13 @@ sub opac_cover_images {
                     let { isbn, imgTitle } = div.dataset;
                     if (isbn && isbn.length == 10) {
                         let onResultPage = divDetail.length ? false : true;
-                        
+
                         div.innerHTML += `
                             <div class="cover-image electre-loading" id="electre-coverimg">
                                 <img src=""/>
                             </div>
                         `;
-                        
+
                         const promise = $.get(
                              `/api/v1/contrib/electre/image?isbn10=${isbn}&side=opac&result_page=${onResultPage}`, function( data ) {
                                 if (data) {
@@ -336,7 +348,7 @@ sub opac_cover_images {
                 let isbn = coverSliderDatas.isbn;
                 if (isbn && isbn.length == 10) {
                     $.get(
-                        '/api/v1/contrib/electre/resume?isbn10=' + isbn, function( data ) {
+                        '/api/v1/contrib/electre/resume?isbn10=' + isbn + '&side=opac', function( data ) {
                             if (data) {
                                 divDetail.append(`
                                         <span class="results_summary electre">
@@ -354,8 +366,14 @@ sub opac_cover_images {
                 }
             }
         }
-    document.addEventListener('DOMContentLoaded', addElectreCover, true);
-    document.addEventListener('DOMContentLoaded', addElectreResume, true);
+JS
+
+    $js .= "    document.addEventListener('DOMContentLoaded', addElectreCover, true);\n"
+      if $image_on_opac;
+    $js .= "    document.addEventListener('DOMContentLoaded', addElectreResume, true);\n"
+      if $resume_on_opac;
+
+    $js .= <<'JS';
     </script>
 JS
 

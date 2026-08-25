@@ -59,7 +59,16 @@ sub get_electre_image {
 
     my $side           = $c->param('side');
     my $on_result_page = $c->param('result_page');
-    my $picSize        = $c->_determine_pic_size( $c, $side, $on_result_page );
+
+    if ( $side && $side =~ /^(staff|opac)$/ ) {
+        my $plugin = Koha::Plugin::Com::Biblibre::Electre->new();
+        return $c->render(
+            status  => 404,
+            openapi => { error => "Cover image display disabled for this side" }
+        ) unless $plugin->retrieve_data("image_on_$side");
+    }
+
+    my $picSize = $c->_determine_pic_size( $c, $side, $on_result_page );
 
     my $token = $c->_getAccessToken();
 
@@ -107,12 +116,12 @@ sub get_electre_resume {
     my $c = shift->openapi->valid_input or return;
 
     my $isbn10 = $c->param('isbn10');
-    
+
     return $c->render(
         status => 400,
         openapi => { error => "No ISBN10 provided" }
     ) unless $isbn10;
-    
+
     my $ean = NormalizeISBN(
             {
                 isbn          => $isbn10,
@@ -124,6 +133,15 @@ sub get_electre_resume {
         status => 400,
         openapi => { error => "Invalid ISBN10: could not convert to EAN13" }
     ) unless $ean;
+
+    my $side = $c->param('side');
+    if ( $side && $side =~ /^(staff|opac)$/ ) {
+        my $plugin = Koha::Plugin::Com::Biblibre::Electre->new();
+        return $c->render(
+            status  => 404,
+            openapi => { error => "Resume display disabled for this side" }
+        ) unless $plugin->retrieve_data("resume_on_$side");
+    }
 
     my $token               = $c->_getAccessToken();
     my $noticeByEanEndpoint = "https://api.electre-ng.com/notices/ean/${ean}";
